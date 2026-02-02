@@ -1,23 +1,33 @@
 using System.Net.Http.Json;
-using MehmetSonmez.Portfolio.Core.Dtos;
+using MehmetSonmez.Portfolio.Core.Dtos; // Namespace'in Dtos olduğundan emin ol (küçük/büyük harf)
+using Microsoft.Extensions.Configuration; // Eklendi
 
 namespace MehmetSonmez.Portfolio.Service.Concrete;
 
 public class GithubService
 {
     private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration; // Eklendi
 
-    public GithubService(HttpClient httpClient)
+    public GithubService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
-        // User-Agent zorunludur GitHub API için
+        _configuration = configuration;
+        
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "MehmetSonmezPortfolio");
     }
 
-    public async Task<List<GithubRepoDto>> GetRepositoriesAsync(string username)
+    public async Task<List<GithubRepoDto>> GetRepositoriesAsync(string usernameFromController) 
     {
+        // Not: Controller'dan parametre olarak da gelebilir, 
+        // ancak biz varsayılanı appsettings'den alalım eğer boş gelirse.
+        
+        var configUsername = _configuration["GithubSettings:Username"];
+        var targetUser = !string.IsNullOrEmpty(usernameFromController) ? usernameFromController : configUsername;
+        var baseUrl = _configuration["GithubSettings:ApiUrl"];
+
         // En son güncellenen 6 projeyi çekelim
-        var url = $"https://api.github.com/users/mehmet2725/repos?sort=updated&per_page=6";
+        var url = $"{baseUrl}{targetUser}/repos?sort=updated&per_page=6";
         
         try 
         {
@@ -26,7 +36,6 @@ public class GithubService
         }
         catch (Exception ex)
         {
-            // Hata olursa boş liste dön, loglama eklenebilir.
             Console.WriteLine($"GitHub Hatası: {ex.Message}");
             return new List<GithubRepoDto>();
         }

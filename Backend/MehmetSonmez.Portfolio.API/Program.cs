@@ -1,69 +1,52 @@
-using MehmetSonmez.Portfolio.Data.Contexts; // AppDbContext'i bulması için
-using Microsoft.EntityFrameworkCore;         // UseSqlServer için
+using MehmetSonmez.Portfolio.Data.Contexts;
 using MehmetSonmez.Portfolio.Service.Abstract;
 using MehmetSonmez.Portfolio.Service.Concrete;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --------------------------------------------------------
-// 1. SERVİSLERİN EKLENDİĞİ BÖLÜM (DI Container)
-// --------------------------------------------------------
-
-// Controller'ları sisteme ekle
+// 1. SERVİSLERİ EKLE
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache(); // Cache servisi
 
-// CORS Politikası: Sadece Frontend'e izin ver
+// CORS (Çok Önemli: En geniş izin)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowNextJS", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // Frontend adresin
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
 
-// Swagger / OpenAPI (API'yi test etmek için dokümantasyon)
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Veritabanı Bağlantısı (DbContext)
-// ConnectionString'i appsettings.json'dan okur.
+// Veritabanı
 builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlOptions => 
-    {
-        // Migration'ların "MehmetSonmez.Portfolio.Data" projesinde tutulacağını belirtiyoruz.
-        // Bunu demezsek hata alırız çünkü API projesinde migration klasörü yok.
-        sqlOptions.MigrationsAssembly("MehmetSonmez.Portfolio.Data");
-    });
-});
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-// Servisleri Bağla (Dependency Injection)
-builder.Services.AddScoped<IProjectService, ProjectManager>();
-
-// Program.cs dosyasında, builder.Services kısmına ekle:
-
-// Mevcut kodlarının altına, "builder.Build()"den önce:
-builder.Services.AddHttpClient<MehmetSonmez.Portfolio.Service.Concrete.GithubService>();
+// Servisler
+builder.Services.AddHttpClient<GithubService>();
+builder.Services.AddHttpClient<MediumService>();
+// ProjectManager servisi varsa buraya ekle:
+// builder.Services.AddScoped<IProjectService, ProjectManager>();
 
 var app = builder.Build();
 
-// --------------------------------------------------------
-// 2. MIDDLEWARE (UYGULAMA AKIŞI) BÖLÜMÜ
-// --------------------------------------------------------
+// 2. UYGULAMA AKIŞI (Middleware Sıralaması Kritiktir)
 
-// Geliştirme ortamındaysak Swagger'ı aç
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// HTTPS Yönlendirmesini KAPATTIK (Lokalde sorun çıkarmaması için)
+// app.UseHttpsRedirection(); 
 
-app.UseCors("AllowNextJS");
+// CORS'u Devreye Sok (Authorization'dan ÖNCE olmalı)
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

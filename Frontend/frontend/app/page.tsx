@@ -1,93 +1,90 @@
 "use client";
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Github, Star, Code, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Terminal, Layout, Database, BookOpen } from "lucide-react";
 
-interface Repo {
-  name: string;
-  description: string;
-  htmlUrl: string;
-  language: string;
-  stargazersCount: number;
-}
-
-export default function ProjectsPage() {
-  const [repos, setRepos] = useState<Repo[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-
-    fetch("http://localhost:5184/api/github/mehmet2725") 
-      .then((res) => res.json())
-      .then((data) => {
-        setRepos(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Veri çekilemedi:", err);
-        setLoading(false);
-      });
-  }, []);
-
+export default function HomePage() {
   return (
-    <div className="max-w-6xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
+    <div className="min-h-[80vh] flex flex-col justify-center max-w-6xl mx-auto px-4">
+      
+      {/* Hero Section */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.8 }}
+        className="space-y-6"
       >
-        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-          <Code className="text-cyan-400" size={32} />
-          Projelerim
+        {/* Etiket - İş Durumu */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-950/30 border border-green-500/30 text-green-400 text-sm font-medium">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          Open for Work (Junior Full Stack)
+        </div>
+
+        {/* Ana Başlık */}
+        <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-tight">
+          Merhaba, Ben <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Mehmet.</span>
+          <br />
+          <span className="text-slate-400 text-4xl md:text-6xl">Jr. Full Stack Developer</span>
         </h1>
-        <p className="text-slate-400 mb-10">
-          GitHub üzerindeki açık kaynak kodlu çalışmalarım ve katkılarım.
+
+        {/* Alt Açıklama - CV Özeti */}
+        <p className="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
+          Amasya Üniversitesi Bilgisayar Programcılığı mezunu ve Acunmedya Akademi Full-Stack eğitimi almış bir geliştiriciyim. 
+          <span className="text-cyan-400 mx-1">.NET</span> ve <span className="text-purple-400 mx-1">React/Next.js</span> teknolojileriyle modern web çözümleri üretiyorum.
         </p>
 
-        {loading ? (
-          <div className="text-cyan-400 animate-pulse">GitHub verileri yükleniyor...</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {repos.map((repo, index) => (
-              <motion.a
-                key={repo.name}
-                href={repo.htmlUrl}
-                target="_blank"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="group relative bg-[#1e293b]/50 border border-slate-700 hover:border-cyan-500/50 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] flex flex-col h-full"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-slate-800 rounded-lg text-cyan-400 group-hover:text-white group-hover:bg-cyan-600 transition-colors">
-                    <Github size={24} />
-                  </div>
-                  <ExternalLink size={16} className="text-slate-500 group-hover:text-cyan-400" />
-                </div>
-
-                <h3 className="text-xl font-bold text-slate-100 mb-2 group-hover:text-cyan-400 transition-colors">
-                  {repo.name}
-                </h3>
-                
-                <p className="text-slate-400 text-sm mb-6 line-clamp-3 flex-1">
-                  {repo.description || "Açıklama bulunmuyor ama kodları harika!"}
-                </p>
-
-                <div className="flex items-center justify-between pt-4 border-t border-slate-700/50 mt-auto">
-                   <div className="flex items-center gap-2 text-xs font-mono text-cyan-300">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-                      {repo.language || "Code"}
-                   </div>
-                   <div className="flex items-center gap-1 text-slate-400 text-sm">
-                      <Star size={14} className="text-yellow-500" />
-                      {repo.stargazersCount}
-                   </div>
-                </div>
-              </motion.a>
-            ))}
-          </div>
-        )}
+        {/* Butonlar */}
+        <div className="flex flex-wrap gap-4 pt-4">
+          <Link 
+            href="/projects" 
+            className="group flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-4 rounded-xl font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-900/20"
+          >
+            Projelerimi İncele
+            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+          
+          <Link 
+            href="/blog" 
+            className="flex items-center gap-2 bg-[#1e293b] hover:bg-slate-800 text-white border border-slate-700 px-8 py-4 rounded-xl font-bold transition-all hover:scale-105 active:scale-95"
+          >
+            <BookOpen size={20} className="text-yellow-400" />
+            Medium Yazılarım
+          </Link>
+        </div>
       </motion.div>
+
+      {/* Alt Kartlar (Yetenek Özeti) */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.8 }}
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20"
+      >
+        {/* Backend */}
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-cyan-500/30 transition-colors">
+          <Terminal className="text-cyan-400 mb-4" size={32} />
+          <h3 className="text-xl font-bold text-white mb-2">Backend (.NET)</h3>
+          <p className="text-slate-400">C#, Clean Architecture ve SQL veritabanı yönetimi ile sağlam API altyapıları.</p>
+        </div>
+
+        {/* Frontend */}
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-purple-500/30 transition-colors">
+          <Layout className="text-purple-400 mb-4" size={32} />
+          <h3 className="text-xl font-bold text-white mb-2">Frontend (React)</h3>
+          <p className="text-slate-400">Next.js, Tailwind CSS ve Modern JavaScript ile responsive arayüzler.</p>
+        </div>
+
+        {/* Full Stack */}
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-green-500/30 transition-colors">
+          <Database className="text-green-400 mb-4" size={32} />
+          <h3 className="text-xl font-bold text-white mb-2">Veri & Entegrasyon</h3>
+          <p className="text-slate-400">MSSQL, MySQL ve REST API entegrasyonları ile uçtan uca proje geliştirme.</p>
+        </div>
+      </motion.div>
+
     </div>
   );
 }
