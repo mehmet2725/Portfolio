@@ -43,6 +43,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Servisleri Bağla (Dependency Injection)
 builder.Services.AddScoped<IProjectService, ProjectManager>();
 
+// Program.cs dosyasında, builder.Services kısmına ekle:
+
+// Mevcut kodlarının altına, "builder.Build()"den önce:
+builder.Services.AddHttpClient<MehmetSonmez.Portfolio.Service.Concrete.GithubService>();
+
 var app = builder.Build();
 
 // --------------------------------------------------------
