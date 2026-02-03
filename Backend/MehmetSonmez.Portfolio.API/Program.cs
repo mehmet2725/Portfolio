@@ -29,8 +29,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Servisler
 builder.Services.AddHttpClient<GithubService>();
 builder.Services.AddHttpClient<MediumService>();
-// ProjectManager servisi varsa buraya ekle:
-// builder.Services.AddScoped<IProjectService, ProjectManager>();
+
+// ProjectManager servisi EKLENDİ (Artık yorum satırı değil):
+builder.Services.AddScoped<IProjectService, ProjectManager>();
 
 var app = builder.Build();
 
