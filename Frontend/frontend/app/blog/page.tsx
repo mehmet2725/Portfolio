@@ -16,18 +16,15 @@ export default function BlogPage() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // API URL ayarı
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5184/api";
+    // GÜNCELLEME: Canlı sunucu adresi eklendi
+    const API_URL = "https://api.mehmetsonmez.tr/api";
 
     useEffect(() => {
-        // Önce loading'i true yap
         setLoading(true);
 
         fetch(`${API_URL}/medium`)
             .then(async (res) => {
-                // HATA YAKALAMA BLOĞU
                 if (!res.ok) {
-                    // Eğer sunucu 200 (Başarılı) dönmezse hatayı fırlat
                     throw new Error(`Sunucu Hatası: ${res.status} ${res.statusText}`);
                 }
                 return res.json();
@@ -38,12 +35,10 @@ export default function BlogPage() {
             })
             .catch((err) => {
                 console.error("Medium verisi çekilemedi:", err);
-                // Hatayı ekranda göstermek istersen state'e atabilirsin ama şimdilik konsol yeterli
                 setLoading(false);
             });
-    }, [API_URL]);
+    }, []);
 
-    // Tarihi Türkçe formatına çevirme
     const formatDate = (dateString: string) => {
         try {
             const date = new Date(dateString);
@@ -89,7 +84,6 @@ export default function BlogPage() {
                                 transition={{ delay: index * 0.1 }}
                                 className="group flex flex-col bg-[#1e293b]/50 border border-slate-700 hover:border-yellow-500/50 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(234,179,8,0.15)] h-full"
                             >
-                                {/* Resim Alanı */}
                                 <div className="relative h-48 overflow-hidden bg-slate-800">
                                     <img
                                         src={post.thumbnail}
@@ -102,7 +96,6 @@ export default function BlogPage() {
                                     </div>
                                 </div>
 
-                                {/* İçerik */}
                                 <div className="p-6 flex flex-col flex-1">
                                     <h3 className="text-xl font-bold text-slate-100 mb-3 group-hover:text-yellow-400 transition-colors line-clamp-2">
                                         {post.title}
@@ -112,7 +105,6 @@ export default function BlogPage() {
                                         {post.summary}
                                     </p>
 
-                                    {/* Etiketler (İlk 3 tanesi) */}
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         {post.categories.slice(0, 3).map(cat => (
                                             <span key={cat} className="text-[10px] uppercase tracking-wider bg-slate-800 text-slate-400 px-2 py-1 rounded border border-slate-700">

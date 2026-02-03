@@ -3,13 +3,12 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Github, Star, Code, ExternalLink, AlertCircle } from "lucide-react";
 
-// Backend'den gelen yeni formata (snake_case) göre güncelledik
 interface Repo {
   name: string;
   description: string;
-  html_url: string;        // <-- DÜZELTME: htmlUrl yerine html_url
+  html_url: string;
   language: string;
-  stargazers_count: number; // <-- DÜZELTME: stargazersCount yerine stargazers_count
+  stargazers_count: number;
 }
 
 export default function ProjectsPage() {
@@ -17,8 +16,8 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Backend URL (Env yoksa localhost)
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5184/api";
+  // GÜNCELLEME: Canlı sunucu adresi eklendi
+  const API_URL = "https://api.mehmetsonmez.tr/api";
 
   useEffect(() => {
     fetch(`${API_URL}/github/mehmet2725`)
@@ -35,7 +34,7 @@ export default function ProjectsPage() {
         setError("Github verileri şu an yüklenemiyor.");
         setLoading(false);
       });
-  }, [API_URL]);
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-4 pb-20">
@@ -67,13 +66,12 @@ export default function ProjectsPage() {
             {repos.map((repo, index) => (
               <motion.a
                 key={repo.name}
-                href={repo.html_url} // <-- DÜZELTME: html_url kullanıyoruz
+                href={repo.html_url}
                 target="_blank"
-                rel="noopener noreferrer" // Güvenlik ve performans için
+                rel="noopener noreferrer"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
-                // "group" class'ı hover efektleri için önemli
                 className="group relative bg-[#1e293b]/50 border border-slate-700 hover:border-cyan-500/50 p-6 rounded-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] flex flex-col h-full cursor-pointer"
               >
                 <div className="flex justify-between items-start mb-4">
@@ -92,14 +90,14 @@ export default function ProjectsPage() {
                 </p>
 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-700/50 mt-auto">
-                   <div className="flex items-center gap-2 text-xs font-mono text-cyan-300">
+                    <div className="flex items-center gap-2 text-xs font-mono text-cyan-300">
                       <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
                       {repo.language || "Code"}
-                   </div>
-                   <div className="flex items-center gap-1 text-slate-400 text-sm">
+                    </div>
+                    <div className="flex items-center gap-1 text-slate-400 text-sm">
                       <Star size={14} className="text-yellow-500" />
-                      {repo.stargazers_count} {/* <-- DÜZELTME */}
-                   </div>
+                      {repo.stargazers_count}
+                    </div>
                 </div>
               </motion.a>
             ))}
