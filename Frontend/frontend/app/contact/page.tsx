@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Mail, MapPin, Send, Github, Linkedin,
-  MessageSquare, Terminal, User, FileText, Phone
+  MessageSquare, Terminal, User, FileText, Phone, AlertCircle
 } from "lucide-react";
 
 export default function ContactPage() {
@@ -17,18 +17,41 @@ export default function ContactPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // Hata mesajı için yeni state
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMessage(""); // Önceki hataları temizle
 
-    // Simüle edilmiş gönderim
-    setTimeout(() => {
+    try {
+      // API'ye gerçek istek atıyoruz
+      const response = await fetch("https://api.mehmetsonmez.tr/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      });
+
+      if (response.ok) {
+        // Başarılı olursa
+        setIsSubmitting(false);
+        setIsSent(true);
+        setFormState({ name: "", email: "", subject: "", message: "" }); // Formu temizle
+        setTimeout(() => setIsSent(false), 4000); // 4 saniye sonra yeşil mesajı kaldır
+      } else {
+        // Sunucudan hata dönerse
+        const errorData = await response.json();
+        setIsSubmitting(false);
+        setErrorMessage(errorData.message || "Mesaj gönderilemedi.");
+      }
+    } catch (error) {
+      // Bağlantı hatası olursa
+      console.error(error);
       setIsSubmitting(false);
-      setIsSent(true);
-      setFormState({ name: "", email: "", subject: "", message: "" });
-      setTimeout(() => setIsSent(false), 3000);
-    }, 1500);
+      setErrorMessage("Sunucuya bağlanılamadı. İnternetinizi kontrol edin.");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -39,7 +62,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 pb-20">
+    <div className="max-w-6xl mx-auto px-4 pb-20 pt-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -104,16 +127,16 @@ export default function ContactPage() {
             <div className="flex gap-4">
               <a
                 href="https://github.com/mehmet2725"
-                target="_blank"                  // <-- YENİ SEKME KOMUTU
-                rel="noopener noreferrer"        // <-- GÜVENLİK İÇİN
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
               >
                 <Github size={20} />
               </a>
               <a
                 href="https://www.linkedin.com/in/mehmet-s%C3%B6nmez35/"
-                target="_blank"                  // <-- YENİ SEKME KOMUTU
-                rel="noopener noreferrer"        // <-- GÜVENLİK İÇİN
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
               >
                 <Linkedin size={20} />
@@ -123,7 +146,8 @@ export default function ContactPage() {
         </div>
 
         {/* --- SAĞ KOLON (FORM) --- */}
-        <div className="bg-[#1e293b]/30 p-8 rounded-2xl border border-slate-800 backdrop-blur-sm">
+        <div className="bg-[#1e293b]/30 p-8 rounded-2xl border border-slate-800 backdrop-blur-sm relative">
+          
           <form onSubmit={handleSubmit} className="space-y-6">
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -192,7 +216,9 @@ export default function ContactPage() {
               disabled={isSubmitting || isSent}
               className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${isSent
                 ? "bg-green-600 text-white cursor-default"
-                : "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-900/20 active:scale-95"
+                : errorMessage 
+                  ? "bg-red-600 text-white" 
+                  : "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg shadow-cyan-900/20 active:scale-95"
                 }`}
             >
               {isSubmitting ? (
@@ -202,10 +228,22 @@ export default function ContactPage() {
               ) : (
                 <>
                   <Send size={18} />
-                  Mesajı Gönder
+                  {errorMessage ? "Tekrar Dene" : "Mesajı Gönder"}
                 </>
               )}
             </button>
+            
+            {/* Hata Mesajı Alanı */}
+            {errorMessage && (
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                className="flex items-center justify-center gap-2 text-red-400 text-sm mt-3"
+              >
+                <AlertCircle size={16} />
+                <span>{errorMessage}</span>
+              </motion.div>
+            )}
 
           </form>
         </div>
