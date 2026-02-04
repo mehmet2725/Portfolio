@@ -1,90 +1,151 @@
 "use client";
+
+import { useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
-import { ArrowRight, Terminal, Layout, Database, BookOpen } from "lucide-react";
+import {
+  Mail, MapPin, Send, Github, Linkedin,
+  MessageSquare, Terminal, User, FileText, Phone
+} from "lucide-react";
 
-export default function HomePage() {
+export default function ContactPage() {
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormState({
+      ...formState,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // --- BACKEND YOK, DERT YOK ---
+    // Bu kod kullanıcının mail uygulamasını açar
+    const mailToLink = `mailto:info@mehmetsonmez.tr?subject=${encodeURIComponent(formState.subject)}&body=${encodeURIComponent("Gönderen: " + formState.name + "\nEmail: " + formState.email + "\n\nMesaj:\n" + formState.message)}`;
+    
+    // Yeni sekmede maili aç
+    window.location.href = mailToLink;
+  };
+
   return (
-    <div className="min-h-[80vh] flex flex-col justify-center max-w-6xl mx-auto px-4">
-      
-      {/* Hero Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
+    <div className="max-w-6xl mx-auto px-4 pb-20 pt-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="space-y-6"
+        transition={{ duration: 0.5 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-12"
       >
-        {/* Etiket - İş Durumu */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-950/30 border border-green-500/30 text-green-400 text-sm font-medium">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-          </span>
-          Open for Work (Junior Full Stack)
+
+        {/* --- SOL KOLON (BİLGİLER) --- */}
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-4 flex items-center gap-3">
+              <MessageSquare className="text-cyan-400" size={32} />
+              İletişime Geç
+            </h1>
+            <p className="text-slate-400 text-lg leading-relaxed">
+              Projeleriniz veya tanışmak için bana ulaşabilirsiniz. 
+              Mail butonuna bastığınızda varsayılan posta uygulamanız açılacaktır.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {/* Email Kartı */}
+            <a href="mailto:info@mehmetsonmez.tr" className="flex items-center gap-4 p-4 bg-[#1e293b]/50 border border-slate-700 rounded-xl hover:border-cyan-500/50 transition-colors group cursor-pointer">
+              <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                <Mail size={24} />
+              </div>
+              <div className="overflow-hidden">
+                <h3 className="text-slate-200 font-semibold">Email</h3>
+                <p className="text-slate-400 text-sm truncate">info@mehmetsonmez.tr</p>
+              </div>
+            </a>
+
+            {/* Telefon ve Lokasyon Kartları (Aynı Kalıyor) */}
+             <div className="flex items-center gap-4 p-4 bg-[#1e293b]/50 border border-slate-700 rounded-xl hover:border-green-500/50 transition-colors group">
+              <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
+                <Phone size={24} />
+              </div>
+              <div>
+                <h3 className="text-slate-200 font-semibold">Telefon</h3>
+                <p className="text-slate-400 text-sm">+90 551 950 22 82</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 p-4 bg-[#1e293b]/50 border border-slate-700 rounded-xl hover:border-purple-500/50 transition-colors group">
+              <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                <MapPin size={24} />
+              </div>
+              <div>
+                <h3 className="text-slate-200 font-semibold">Konum</h3>
+                <p className="text-slate-400 text-sm">Şahinbey, Gaziantep</p>
+              </div>
+            </div>
+          </div>
+
+           {/* Sosyal Medya Linkleri (Aynı) */}
+          <div>
+            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+              <Terminal size={18} className="text-yellow-400" />
+              Sosyal Medya
+            </h3>
+            <div className="flex gap-4">
+              <a href="https://github.com/mehmet2725" target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors">
+                <Github size={20} />
+              </a>
+              <a href="https://www.linkedin.com/in/mehmet-s%C3%B6nmez35/" target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors">
+                <Linkedin size={20} />
+              </a>
+            </div>
+          </div>
         </div>
 
-        {/* Ana Başlık */}
-        <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-tight">
-          Merhaba, Ben <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Mehmet.</span>
-          <br />
-          <span className="text-slate-400 text-4xl md:text-6xl">Jr. Full Stack Developer</span>
-        </h1>
-
-        {/* Alt Açıklama - CV Özeti */}
-        <p className="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
-          Amasya Üniversitesi Bilgisayar Programcılığı mezunu ve Acunmedya Akademi Full-Stack eğitimi almış bir geliştiriciyim. 
-          <span className="text-cyan-400 mx-1">.NET</span> ve <span className="text-purple-400 mx-1">React/Next.js</span> teknolojileriyle modern web çözümleri üretiyorum.
-        </p>
-
-        {/* Butonlar */}
-        <div className="flex flex-wrap gap-4 pt-4">
-          <Link 
-            href="/projects" 
-            className="group flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-4 rounded-xl font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-900/20"
-          >
-            Projelerimi İncele
-            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
+        {/* --- SAĞ KOLON (FORM) --- */}
+        <div className="bg-[#1e293b]/30 p-8 rounded-2xl border border-slate-800 backdrop-blur-sm relative">
           
-          <Link 
-            href="/blog" 
-            className="flex items-center gap-2 bg-[#1e293b] hover:bg-slate-800 text-white border border-slate-700 px-8 py-4 rounded-xl font-bold transition-all hover:scale-105 active:scale-95"
-          >
-            <BookOpen size={20} className="text-yellow-400" />
-            Medium Yazılarım
-          </Link>
+          <form onSubmit={handleSubmit} className="space-y-6">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">Ad Soyad</label>
+                <input type="text" name="name" required value={formState.name} onChange={handleChange}
+                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-cyan-500 transition-all" placeholder="İsim Soyisim" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">Email</label>
+                <input type="email" name="email" required value={formState.email} onChange={handleChange}
+                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-cyan-500 transition-all" placeholder="ornek@mail.com" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Konu</label>
+              <input type="text" name="subject" required value={formState.subject} onChange={handleChange}
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-cyan-500 transition-all" placeholder="Konu Başlığı" />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Mesajınız</label>
+              <textarea name="message" required rows={5} value={formState.message} onChange={handleChange}
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:border-cyan-500 transition-all resize-none" placeholder="Mesajınızı Giriniz "></textarea>
+            </div>
+
+            <button type="submit"
+              className="w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg transition-all active:scale-95">
+              <Send size={18} />
+              Mail Uygulamasıyla Gönder
+            </button>
+            
+          </form>
         </div>
+
       </motion.div>
-
-      {/* Alt Kartlar (Yetenek Özeti) */}
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.8 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20"
-      >
-        {/* Backend */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-cyan-500/30 transition-colors">
-          <Terminal className="text-cyan-400 mb-4" size={32} />
-          <h3 className="text-xl font-bold text-white mb-2">Backend (.NET)</h3>
-          <p className="text-slate-400">C#, Clean Architecture ve SQL veritabanı yönetimi ile sağlam API altyapıları.</p>
-        </div>
-
-        {/* Frontend */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-purple-500/30 transition-colors">
-          <Layout className="text-purple-400 mb-4" size={32} />
-          <h3 className="text-xl font-bold text-white mb-2">Frontend (React)</h3>
-          <p className="text-slate-400">Next.js, Tailwind CSS ve Modern JavaScript ile responsive arayüzler.</p>
-        </div>
-
-        {/* Full Stack */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-green-500/30 transition-colors">
-          <Database className="text-green-400 mb-4" size={32} />
-          <h3 className="text-xl font-bold text-white mb-2">Veri & Entegrasyon</h3>
-          <p className="text-slate-400">MSSQL, MySQL ve REST API entegrasyonları ile uçtan uca proje geliştirme.</p>
-        </div>
-      </motion.div>
-
     </div>
   );
 }
